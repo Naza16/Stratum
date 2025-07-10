@@ -1,0 +1,1412 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>STRATUM - Integrated Social Behavior Assessment System</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary-cyan: #06b6d4;
+            --primary-purple: #7c3aed;
+            --dark-bg: #0f172a;
+            --card-bg: rgba(30, 41, 59, 0.8);
+            --text-primary: #e2e8f0;
+            --text-secondary: #94a3b8;
+            --accent-green: #10b981;
+            --accent-orange: #f59e0b;
+            --gradient-primary: linear-gradient(135deg, #06b6d4, #0891b2);
+            --gradient-secondary: linear-gradient(135deg, #7c3aed, #5b21b6);
+            --gradient-bg: linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #334155 100%);
+        }
+
+        body {
+            font-family: 'Inter', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: var(--gradient-bg);
+            color: var(--text-primary);
+            min-height: 100vh;
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+
+        /* Animated Background */
+        .animated-bg {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            opacity: 0.1;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0px) rotate(0deg); }
+            33% { transform: translateY(-30px) rotate(120deg); }
+            66% { transform: translateY(30px) rotate(240deg); }
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        /* Enhanced Header */
+        .header {
+            background: rgba(15, 23, 42, 0.95);
+            backdrop-filter: blur(20px);
+            border-bottom: 1px solid rgba(148, 163, 184, 0.1);
+            padding: 1rem 0;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+        }
+
+        .nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-size: 1.8rem;
+            font-weight: 800;
+            background: var(--gradient-primary);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            text-transform: uppercase;
+            letter-spacing: 3px;
+            position: relative;
+        }
+
+        .logo::after {
+            content: '';
+            position: absolute;
+            bottom: -5px;
+            left: 0;
+            width: 100%;
+            height: 2px;
+            background: var(--gradient-primary);
+            transform: scaleX(0);
+            transition: transform 0.3s ease;
+        }
+
+        .logo:hover::after {
+            transform: scaleX(1);
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 2.5rem;
+            list-style: none;
+        }
+
+        .nav-links a {
+            color: var(--text-secondary);
+            text-decoration: none;
+            transition: all 0.3s ease;
+            font-weight: 500;
+            position: relative;
+            padding: 0.5rem 0;
+        }
+
+        .nav-links a::before {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 0;
+            height: 2px;
+            background: var(--primary-cyan);
+            transition: width 0.3s ease;
+        }
+
+        .nav-links a:hover {
+            color: var(--primary-cyan);
+        }
+
+        .nav-links a:hover::before {
+            width: 100%;
+        }
+
+        .profile-section {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .notification-bell {
+            position: relative;
+            color: var(--text-secondary);
+            font-size: 1.2rem;
+            cursor: pointer;
+            transition: color 0.3s ease;
+        }
+
+        .notification-bell:hover {
+            color: var(--primary-cyan);
+        }
+
+        .notification-badge {
+            position: absolute;
+            top: -5px;
+            right: -5px;
+            background: #ef4444;
+            color: white;
+            border-radius: 50%;
+            width: 18px;
+            height: 18px;
+            font-size: 0.7rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .profile-avatar {
+            width: 45px;
+            height: 45px;
+            border-radius: 50%;
+            background: var(--gradient-primary);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+            cursor: pointer;
+            transition: transform 0.3s ease;
+            border: 2px solid transparent;
+        }
+
+        .profile-avatar:hover {
+            transform: scale(1.1);
+            border-color: var(--primary-cyan);
+        }
+
+        /* Enhanced Hero Section */
+        .hero {
+            text-align: center;
+            padding: 6rem 0;
+            background: radial-gradient(ellipse at center, rgba(6, 182, 212, 0.15) 0%, transparent 70%);
+            margin: 2rem 0;
+            border-radius: 30px;
+            border: 1px solid rgba(6, 182, 212, 0.2);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .hero::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 1000"><defs><radialGradient id="grad1" cx="50%" cy="50%" r="50%"><stop offset="0%" style="stop-color:rgba(6,182,212,0.1);stop-opacity:1" /><stop offset="100%" style="stop-color:rgba(6,182,212,0);stop-opacity:0" /></radialGradient></defs><circle cx="500" cy="500" r="400" fill="url(%23grad1)"/></svg>');
+            opacity: 0.3;
+            animation: pulse 4s ease-in-out infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 0.3; transform: scale(1); }
+            50% { opacity: 0.5; transform: scale(1.05); }
+        }
+
+        .hero-content {
+            position: relative;
+            z-index: 2;
+        }
+
+        .hero h1 {
+            font-size: 4rem;
+            margin-bottom: 1.5rem;
+            background: linear-gradient(135deg, #06b6d4, #0891b2, #7c3aed);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            font-weight: 800;
+            line-height: 1.2;
+            animation: slideInUp 1s ease-out;
+        }
+
+        .hero-subtitle {
+            font-size: 1.4rem;
+            color: var(--text-secondary);
+            margin-bottom: 3rem;
+            max-width: 700px;
+            margin-left: auto;
+            margin-right: auto;
+            animation: slideInUp 1s ease-out 0.2s both;
+        }
+
+        @keyframes slideInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Enhanced Sign-in Buttons */
+        .signin-section {
+            margin-bottom: 4rem;
+            animation: slideInUp 1s ease-out 0.4s both;
+        }
+
+        .signin-buttons {
+            display: flex;
+            gap: 2rem;
+            justify-content: center;
+            margin-bottom: 2rem;
+            flex-wrap: wrap;
+        }
+
+        .signin-btn {
+            padding: 1.5rem 3rem;
+            border: none;
+            border-radius: 16px;
+            font-size: 1.2rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.4s ease;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 1rem;
+            min-width: 250px;
+            justify-content: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .signin-btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+            transition: left 0.5s;
+        }
+
+        .signin-btn:hover::before {
+            left: 100%;
+        }
+
+        .citizen-btn {
+            background: var(--gradient-primary);
+            color: white;
+            box-shadow: 0 8px 30px rgba(6, 182, 212, 0.4);
+        }
+
+        .citizen-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 15px 40px rgba(6, 182, 212, 0.6);
+        }
+
+        .government-btn {
+            background: var(--gradient-secondary);
+            color: white;
+            box-shadow: 0 8px 30px rgba(124, 58, 237, 0.4);
+        }
+
+        .government-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 15px 40px rgba(124, 58, 237, 0.6);
+        }
+
+        .signin-features {
+            display: flex;
+            justify-content: center;
+            gap: 3rem;
+            flex-wrap: wrap;
+            margin-top: 2rem;
+        }
+
+        .feature-item {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+        }
+
+        .feature-icon {
+            color: var(--accent-green);
+        }
+
+        /* Statistics Section */
+        .stats-section {
+            background: var(--card-bg);
+            border-radius: 20px;
+            padding: 3rem;
+            margin: 3rem 0;
+            border: 1px solid rgba(148, 163, 184, 0.1);
+            backdrop-filter: blur(20px);
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 2rem;
+        }
+
+        .stat-item {
+            text-align: center;
+            padding: 1.5rem;
+            border-radius: 16px;
+            background: rgba(15, 23, 42, 0.5);
+            transition: transform 0.3s ease;
+        }
+
+        .stat-item:hover {
+            transform: translateY(-5px);
+        }
+
+        .stat-number {
+            font-size: 2.5rem;
+            font-weight: 800;
+            background: var(--gradient-primary);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 0.5rem;
+        }
+
+        .stat-label {
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        /* Dashboard Preview Enhanced */
+        .dashboard-section {
+            margin: 4rem 0;
+        }
+
+        .section-header {
+            text-align: center;
+            margin-bottom: 3rem;
+        }
+
+        .section-title {
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+            background: var(--gradient-primary);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            font-weight: 700;
+        }
+
+        .section-subtitle {
+            color: var(--text-secondary);
+            font-size: 1.1rem;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        .dashboard-preview {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 2rem;
+            margin-bottom: 3rem;
+        }
+
+        .score-card {
+            background: var(--card-bg);
+            border-radius: 20px;
+            padding: 2.5rem;
+            border: 1px solid rgba(148, 163, 184, 0.1);
+            backdrop-filter: blur(20px);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .score-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: var(--gradient-primary);
+        }
+
+        .score-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+        }
+
+        .score-title {
+            font-size: 1.2rem;
+            color: var(--text-primary);
+            font-weight: 600;
+        }
+
+        .score-value {
+            font-size: 1rem;
+            color: var(--text-secondary);
+            background: rgba(6, 182, 212, 0.1);
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+        }
+
+        .score-display {
+            display: flex;
+            align-items: center;
+            gap: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        .score-number {
+            font-size: 3.5rem;
+            font-weight: 800;
+            background: var(--gradient-primary);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .score-trend {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            color: var(--accent-green);
+            font-weight: 600;
+        }
+
+        .progress-container {
+            margin-bottom: 2rem;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 12px;
+            background: rgba(148, 163, 184, 0.2);
+            border-radius: 6px;
+            overflow: hidden;
+            margin-bottom: 1rem;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--accent-green), var(--primary-cyan));
+            width: 72.3%;
+            border-radius: 6px;
+            animation: progressAnimation 2s ease-out;
+            position: relative;
+        }
+
+        .progress-fill::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
+            animation: shimmer 2s infinite;
+        }
+
+        @keyframes shimmer {
+            0% { transform: translateX(-100%); }
+            100% { transform: translateX(100%); }
+        }
+
+        .stability-info {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .stability-label {
+            color: var(--accent-green);
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .stability-percentage {
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+        }
+
+        /* Enhanced Map Section */
+        .map-section {
+            background: var(--card-bg);
+            border-radius: 20px;
+            padding: 2.5rem;
+            border: 1px solid rgba(148, 163, 184, 0.1);
+            backdrop-filter: blur(20px);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .map-section::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: var(--gradient-secondary);
+        }
+
+        .map-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+        }
+
+        .map-title {
+            font-size: 1.2rem;
+            color: var(--text-primary);
+            font-weight: 600;
+        }
+
+        .map-controls {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .map-control-btn {
+            padding: 0.5rem;
+            background: rgba(124, 58, 237, 0.2);
+            border: none;
+            border-radius: 8px;
+            color: var(--primary-purple);
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .map-control-btn:hover {
+            background: rgba(124, 58, 237, 0.3);
+        }
+
+        .map-container {
+            width: 100%;
+            height: 350px;
+            background: linear-gradient(135deg, #a7f3d0, #6ee7b7, #34d399);
+            border-radius: 16px;
+            position: relative;
+            overflow: hidden;
+            margin-bottom: 1.5rem;
+        }
+
+        .map-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 300"><defs><pattern id="grid" width="20" height="20" patternUnits="userSpaceOnUse"><path d="M 20 0 L 0 0 0 20" fill="none" stroke="rgba(255,255,255,0.4)" stroke-width="1"/></pattern></defs><rect width="100%" height="100%" fill="url(%23grid)"/><path d="M50 50 Q200 100 350 50 Q300 200 150 250 Q100 150 50 50" fill="none" stroke="rgba(255,255,255,0.8)" stroke-width="3"/><circle cx="120" cy="80" r="8" fill="rgba(239,68,68,0.8)"/><circle cx="280" cy="120" r="6" fill="rgba(34,197,94,0.8)"/><circle cx="200" cy="180" r="10" fill="rgba(59,130,246,0.8)"/></svg>');
+            opacity: 0.8;
+        }
+
+        .map-legend {
+            display: flex;
+            justify-content: space-around;
+            gap: 1rem;
+            flex-wrap: wrap;
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 0.9rem;
+        }
+
+        .legend-color {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+        }
+
+        .legend-high { background: #ef4444; }
+        .legend-medium { background: #f59e0b; }
+        .legend-low { background: #10b981; }
+
+        /* Features Grid */
+        .features-section {
+            margin: 4rem 0;
+        }
+
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            margin-top: 3rem;
+        }
+
+        .feature-card {
+            background: var(--card-bg);
+            border-radius: 20px;
+            padding: 2.5rem;
+            border: 1px solid rgba(148, 163, 184, 0.1);
+            backdrop-filter: blur(20px);
+            text-align: center;
+            transition: all 0.4s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .feature-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(135deg, rgba(6, 182, 212, 0.05), rgba(124, 58, 237, 0.05));
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .feature-card:hover::before {
+            opacity: 1;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+        }
+
+        .feature-icon-wrapper {
+            width: 80px;
+            height: 80px;
+            margin: 0 auto 1.5rem;
+            border-radius: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2rem;
+            position: relative;
+            z-index: 2;
+        }
+
+        .feature-icon-1 {
+            background: linear-gradient(135deg, #1f2937, #374151);
+            color: var(--accent-green);
+        }
+
+        .feature-icon-2 {
+            background: linear-gradient(135deg, #f3f4f6, #e5e7eb);
+            color: var(--primary-cyan);
+        }
+
+        .feature-icon-3 {
+            background: var(--gradient-primary);
+            color: white;
+        }
+
+        .feature-icon-4 {
+            background: var(--gradient-secondary);
+            color: white;
+        }
+
+        .feature-icon-5 {
+            background: linear-gradient(135deg, var(--accent-orange), #d97706);
+            color: white;
+        }
+
+        .feature-icon-6 {
+            background: linear-gradient(135deg, #ef4444, #dc2626);
+            color: white;
+        }
+
+        .feature-title {
+            font-size: 1.3rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+            color: var(--text-primary);
+            position: relative;
+            z-index: 2;
+        }
+
+        .feature-description {
+            color: var(--text-secondary);
+            line-height: 1.6;
+            position: relative;
+            z-index: 2;
+        }
+
+        /* News & Updates Section */
+        .news-section {
+            background: var(--card-bg);
+            border-radius: 20px;
+            padding: 3rem;
+            margin: 4rem 0;
+            border: 1px solid rgba(148, 163, 184, 0.1);
+            backdrop-filter: blur(20px);
+        }
+
+        .news-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            margin-top: 2rem;
+        }
+
+        .news-item {
+            background: rgba(15, 23, 42, 0.5);
+            border-radius: 16px;
+            padding: 2rem;
+            transition: transform 0.3s ease;
+            border-left: 4px solid var(--primary-cyan);
+        }
+
+        .news-item:hover {
+            transform: translateX(5px);
+        }
+
+        .news-date {
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .news-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+            color: var(--text-primary);
+        }
+
+        .news-excerpt {
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+            line-height: 1.5;
+        }
+
+        /* Enhanced Footer */
+        .footer {
+            background: rgba(15, 23, 42, 0.95);
+            border-top: 1px solid rgba(148, 163, 184, 0.1);
+            padding: 4rem 0 2rem;
+            margin-top: 4rem;
+        }
+
+        .footer-content {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 3rem;
+            margin-bottom: 2rem;
+        }
+
+        .footer-section h3 {
+            color: var(--text-primary);
+            font-size: 1.2rem;
+            margin-bottom: 1rem;
+            font-weight: 600;
+        }
+
+        .footer-links {
+            display: flex;
+            flex-direction: column;
+            gap: 0.8rem;
+        }
+
+        .footer-links a {
+            color: var(--text-secondary);
+            text-decoration: none;
+            transition: color 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .footer-links a:hover {
+            color: var(--primary-cyan);
+        }
+
+        .footer-bottom {
+            border-top: 1px solid rgba(148, 163, 184, 0.1);
+            padding-top: 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+
+        .social-links {
+            display: flex;
+            gap: 1rem;
+        }
+
+        .social-link {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: rgba(148, 163, 184, 0.1);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--text-secondary);
+            text-decoration: none;
+            transition: all 0.3s ease;
+        }
+
+        .social-link:hover {
+            background: var(--primary-cyan);
+            color: white;
+            transform: translateY(-2px);
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .nav-links {
+                display: none;
+            }
+
+            .hero h1 {
+                font-size: 2.5rem;
+            }
+
+            .signin-buttons {
+                flex-direction: column;
+                align-items: center;
+            }
+
+            .dashboard-preview {
+                grid-template-columns: 1fr;
+            }
+
+            .stats-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .features-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .signin-features {
+                flex-direction: column;
+                gap: 1rem;
+            }
+        }
+
+        /* Loading Animation */
+        .loading-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: var(--dark-bg);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 9999;
+            opacity: 1;
+            transition: opacity 0.5s ease;
+        }
+
+        .loading-overlay.hidden {
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        .loader {
+            width: 60px;
+            height: 60px;
+            border: 3px solid rgba(6, 182, 212, 0.3);
+            border-top: 3px solid var(--primary-cyan);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+    <!-- Loading Screen -->
+    <div class="loading-overlay" id="loadingOverlay">
+        <div class="loader"></div>
+    </div>
+
+    <header class="header">
+        <div class="container">
+            <nav class="nav">
+                <div class="logo">STRATUM</div>
+                <ul class="nav-links">
+                    <li><a href="#dashboard">Dashboard</a></li>
+                    <li><a href="#analytics">Analytics</a></li>
+                    <li><a href="#reports">Reports</a></li>
+                    <li><a href="#compliance">Compliance</a></li>
+                    <li><a href="#support">Support</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <main class="container">
+        <section class="hero">
+            <div class="hero-content">
+                <h1>Integrated Social Behavior Assessment System</h1>
+                <p class="hero-subtitle">
+                    Revolutionary AI-powered behavioral analytics platform providing comprehensive social stability monitoring, 
+                    predictive insights, and community safety enhancement through advanced data intelligence.
+                </p>
+                
+                <div class="signin-section">
+                    <div class="signin-buttons">
+                        <a href="#Citizen-Login" class="signin-btn citizen-btn">
+                            <i class="fas fa-user"></i>
+                            Citizen Access Portal
+                        </a>
+                        <a href="#Government-Login" class="signin-btn government-btn">
+                            <i class="fas fa-landmark"></i>
+                            Government Dashboard
+                        </a>
+                    </div>
+                    
+                    <div class="signin-features">
+                        <div class="feature-item">
+                            <i class="fas fa-shield-alt feature-icon"></i>
+                            <span>Secure Authentication</span>
+                        </div>
+                        <div class="feature-item">
+                            <i class="fas fa-clock feature-icon"></i>
+                            <span>24/7 Monitoring</span>
+                        </div>
+                        <div class="feature-item">
+                            <i class="fas fa-chart-line feature-icon"></i>
+                            <span>Real-time Analytics</span>
+                        </div>
+                        <div class="feature-item">
+                            <i class="fas fa-users feature-icon"></i>
+                            <span>Community Insights</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Statistics Section -->
+        <section class="stats-section">
+            <div class="stats-grid">
+                <div class="stat-item">
+                    <div class="stat-number" data-target="2847">0</div>
+                    <div class="stat-label">Active Citizens</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-number" data-target="156">0</div>
+                    <div class="stat-label">Government Agencies</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-number" data-target="98.7">0</div>
+                    <div class="stat-label">System Accuracy %</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-number" data-target="24">0</div>
+                    <div class="stat-label">Cities Monitored</div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Dashboard Preview -->
+        <section class="dashboard-section">
+            <div class="section-header">
+                <h2 class="section-title">Advanced Dashboard Preview</h2>
+                <p class="section-subtitle">
+                    Experience comprehensive behavioral analytics with real-time monitoring, 
+                    predictive modeling, and actionable insights for enhanced community safety.
+                </p>
+            </div>
+
+            <div class="dashboard-preview">
+                <div class="score-card">
+                    <div class="score-header">
+                        <span class="score-title">Individual Evaluation Composite</span>
+                        <span class="score-value">723/1000</span>
+                    </div>
+                    <div class="score-display">
+                        <div class="score-number">723</div>
+                        <div class="score-trend">
+                            <i class="fas fa-arrow-up"></i>
+                            <span>+5.2%</span>
+                        </div>
+                    </div>
+                    <div class="progress-container">
+                        <div class="progress-bar">
+                            <div class="progress-fill"></div>
+                        </div>
+                        <div class="stability-info">
+                            <div class="stability-label">
+                                <i class="fas fa-check-circle"></i>
+                                Standard Stability
+                            </div>
+                            <div class="stability-percentage">72.3%</div>
+                        </div>
+                    </div>
+                    <p style="color: var(--text-secondary); font-size: 0.95rem; line-height: 1.5;">
+                        Your comprehensive behavioral assessment reflects positive community integration 
+                        with consistent improvement trends across all evaluation metrics.
+                    </p>
+                </div>
+
+                <div class="map-section">
+                    <div class="map-header">
+                        <h3 class="map-title">Community Stability Heatmap</h3>
+                        <div class="map-controls">
+                            <button class="map-control-btn"><i class="fas fa-expand"></i></button>
+                            <button class="map-control-btn"><i class="fas fa-layer-group"></i></button>
+                            <button class="map-control-btn"><i class="fas fa-filter"></i></button>
+                        </div>
+                    </div>
+                    <div class="map-container">
+                        <div class="map-overlay"></div>
+                    </div>
+                    <div class="map-legend">
+                        <div class="legend-item">
+                            <div class="legend-color legend-high"></div>
+                            <span>High Risk Areas</span>
+                        </div>
+                        <div class="legend-item">
+                            <div class="legend-color legend-medium"></div>
+                            <span>Moderate Zones</span>
+                        </div>
+                        <div class="legend-item">
+                            <div class="legend-color legend-low"></div>
+                            <span>Stable Regions</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Features Section -->
+        <section class="features-section">
+            <div class="section-header">
+                <h2 class="section-title">Comprehensive System Features</h2>
+                <p class="section-subtitle">
+                    Cutting-edge technology stack delivering unparalleled insights into social behavior patterns 
+                    and community dynamics through advanced AI and machine learning algorithms.
+                </p>
+            </div>
+
+            <div class="features-grid">
+                <div class="feature-card">
+                    <div class="feature-icon-wrapper feature-icon-3">
+                        <i class="fas fa-brain"></i>
+                    </div>
+                    <h3 class="feature-title">AI Behavioral Analysis</h3>
+                    <p class="feature-description">
+                        Advanced machine learning algorithms analyze behavioral patterns, social interactions, 
+                        and community engagement to provide comprehensive stability assessments.
+                    </p>
+                </div>
+
+                <div class="feature-card">
+                    <div class="feature-icon-wrapper feature-icon-3">
+                        <i class="fas fa-chart-bar"></i>
+                    </div>
+                    <h3 class="feature-title">Predictive Modeling</h3>
+                    <p class="feature-description">
+                        Sophisticated predictive models forecast potential social stability risks and 
+                        recommend proactive interventions for community safety enhancement.
+                    </p>
+                </div>
+
+                <div class="feature-card">
+                    <div class="feature-icon-wrapper feature-icon-3">
+                        <i class="fas fa-users-cog"></i>
+                    </div>
+                    <h3 class="feature-title">Multi-Tier Access</h3>
+                    <p class="feature-description">
+                        Sophisticated role-based access control system providing appropriate data visibility 
+                        for citizens, administrators, and government agencies.
+                    </p>
+                </div>
+
+                <div class="feature-card">
+                    <div class="feature-icon-wrapper feature-icon-3">
+                        <i class="fas fa-balance-scale"></i>
+                    </div>
+                    <h3 class="feature-title">Ethical Compliance</h3>
+                    <p class="feature-description">
+                        Comprehensive ethical framework ensuring fair, unbiased assessments with 
+                        transparent appeal processes and continuous algorithmic auditing.
+                    </p>
+                </div>
+            </div>
+        </section>
+
+        <!-- News & Updates -->
+        <section class="news-section">
+            <div class="section-header">
+                <h2 class="section-title">Latest System Updates</h2>
+                <p class="section-subtitle">
+                    Stay informed about the latest enhancements, policy updates, and system improvements.
+                </p>
+            </div>
+
+            <div class="news-grid">
+                <div class="news-item">
+                    <div class="news-date">December 15, 2024</div>
+                    <h3 class="news-title">Enhanced Privacy Controls Released</h3>
+                    <p class="news-excerpt">
+                        New granular privacy settings allow users greater control over data sharing 
+                        preferences while maintaining system effectiveness.
+                    </p>
+                </div>
+
+                <div class="news-item">
+                    <div class="news-date">December 10, 2024</div>
+                    <h3 class="news-title">AI Model Accuracy Improvement</h3>
+                    <p class="news-excerpt">
+                        Latest machine learning model updates achieve 98.7% accuracy in behavioral 
+                        pattern recognition with reduced false positive rates.
+                    </p>
+                </div>
+
+                <div class="news-item">
+                    <div class="news-date">December 5, 2024</div>
+                    <h3 class="news-title">Mobile App Version 3.0 Launch</h3>
+                    <p class="news-excerpt">
+                        Redesigned mobile interface with enhanced user experience, real-time notifications, 
+                        and improved accessibility features now available.
+                    </p>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h3>System Access</h3>
+                    <div class="footer-links">
+                        <a href="#citizen-portal"><i class="fas fa-user"></i> Citizen Portal</a>
+                        <a href="#government-dashboard"><i class="fas fa-landmark"></i> Government Dashboard</a>
+                        <a href="#admin-panel"><i class="fas fa-cog"></i> Administrator Panel</a>
+                        <a href="#mobile-app"><i class="fas fa-mobile-alt"></i> Mobile Application</a>
+                    </div>
+                </div>
+
+                <div class="footer-section">
+                    <h3>Support & Resources</h3>
+                    <div class="footer-links">
+                        <a href="#documentation"><i class="fas fa-book"></i> Documentation</a>
+                        <a href="#tutorials"><i class="fas fa-play-circle"></i> Video Tutorials</a>
+                        <a href="#faq"><i class="fas fa-question-circle"></i> FAQ</a>
+                        <a href="#contact"><i class="fas fa-envelope"></i> Contact Support</a>
+                    </div>
+                </div>
+
+                <div class="footer-section">
+                    <h3>Legal & Compliance</h3>
+                    <div class="footer-links">
+                        <a href="#privacy"><i class="fas fa-shield-alt"></i> Privacy Policy</a>
+                        <a href="#terms"><i class="fas fa-file-contract"></i> Terms of Service</a>
+                        <a href="#ethics"><i class="fas fa-balance-scale"></i> Ethical Guidelines</a>
+                        <a href="#appeals"><i class="fas fa-gavel"></i> Appeal Process</a>
+                    </div>
+                </div>
+
+                <div class="footer-section">
+                    <h3>Transparency</h3>
+                    <div class="footer-links">
+                        <a href="#bias-report"><i class="fas fa-chart-bar"></i> Bias Reporting</a>
+                        <a href="#audit-logs"><i class="fas fa-clipboard-list"></i> Audit Logs</a>
+                        <a href="#committee"><i class="fas fa-users"></i> Oversight Committee</a>
+                        <a href="#public-data"><i class="fas fa-database"></i> Public Data</a>
+                    </div>
+                </div>
+            </div>
+
+            <div class="footer-bottom">
+                <div class="copyright">
+                    © 2024 STRATUM - Integrated Social Behavior Assessment System. All rights reserved.
+                </div>
+                <div class="social-links">
+                    <a href="#" class="social-link"><i class="fab fa-twitter"></i></a>
+                    <a href="#" class="social-link"><i class="fab fa-linkedin"></i></a>
+                    <a href="#" class="social-link"><i class="fab fa-github"></i></a>
+                    <a href="#" class="social-link"><i class="fab fa-youtube"></i></a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // Loading Screen
+        window.addEventListener('load', function() {
+            setTimeout(() => {
+                document.getElementById('loadingOverlay').classList.add('hidden');
+            }, 1500);
+        });
+
+        // Animated Counter
+        function animateCounter(element, target, duration = 2000) {
+            let start = 0;
+            const increment = target / (duration / 16);
+            const timer = setInterval(() => {
+                start += increment;
+                if (start >= target) {
+                    element.textContent = target;
+                    clearInterval(timer);
+                } else {
+                    element.textContent = Math.floor(start);
+                }
+            }, 16);
+        }
+
+        // Intersection Observer for animations
+        const observerOptions = {
+            threshold: 0.1,
+            rootMargin: '0px 0px -50px 0px'
+        };
+
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.style.opacity = '1';
+                    entry.target.style.transform = 'translateY(0)';
+                    
+                    // Animate counters
+                    if (entry.target.classList.contains('stat-item')) {
+                        const numberElement = entry.target.querySelector('.stat-number');
+                        const target = parseFloat(numberElement.dataset.target);
+                        animateCounter(numberElement, target);
+                    }
+                }
+            });
+        }, observerOptions);
+
+        // Observe elements for animation
+        document.querySelectorAll('.feature-card, .stat-item, .news-item').forEach(el => {
+            el.style.opacity = '0';
+            el.style.transform = 'translateY(20px)';
+            el.style.transition = 'opacity 0.6s ease, transform 0.6s ease';
+            observer.observe(el);
+        });
+
+        // Enhanced button interactions
+        document.querySelector('.citizen-btn').addEventListener('click', function(e) {
+            e.preventDefault();
+            this.style.transform = 'scale(0.95)';
+            setTimeout(() => {
+                this.style.transform = '';
+                showModal('Citizen Access Portal', 'Redirecting to secure citizen authentication system...');
+            }, 150);
+        });
+
+        document.querySelector('.government-btn').addEventListener('click', function(e) {
+            e.preventDefault();
+            this.style.transform = 'scale(0.95)';
+            setTimeout(() => {
+                this.style.transform = '';
+                showModal('Government Dashboard', 'Accessing high-security government portal...');
+            }, 150);
+        });
+
+        // Modal system
+        function showModal(title, message) {
+            const modal = document.createElement('div');
+            modal.style.cssText = `
+                position: fixed;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                background: rgba(0,0,0,0.8);
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                z-index: 10000;
+                opacity: 0;
+                transition: opacity 0.3s ease;
+            `;
+            
+            modal.innerHTML = `
+                <div style="
+                    background: var(--card-bg);
+                    padding: 3rem;
+                    border-radius: 20px;
+                    text-align: center;
+                    max-width: 400px;
+                    border: 1px solid rgba(148, 163, 184, 0.2);
+                    backdrop-filter: blur(20px);
+                ">
+                    <h3 style="color: var(--text-primary); margin-bottom: 1rem; font-size: 1.5rem;">${title}</h3>
+                    <p style="color: var(--text-secondary); margin-bottom: 2rem;">${message}</p>
+                    <button onclick="this.closest('div').remove()" style="
+                        background: var(--gradient-primary);
+                        color: white;
+                        border: none;
+                        padding: 0.8rem 2rem;
+                        border-radius: 10px;
+                        cursor: pointer;
+                        font-weight: 600;
+                    ">Close</button>
+                </div>
+            `;
+            
+            document.body.appendChild(modal);
+            setTimeout(() => modal.style.opacity = '1', 10);
+            
+            modal.addEventListener('click', (e) => {
+                if (e.target === modal) modal.remove();
+            });
+        }
+
+        // Smooth scrolling for navigation
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'start'
+                    });
+                }
+            });
+        });
+
+        // Parallax effect for floating shapes
+        window.addEventListener('scroll', () => {
+            const scrolled = window.pageYOffset;
+            const shapes = document.querySelectorAll('.shape');
+            shapes.forEach((shape, index) => {
+                const speed = 0.5 + (index * 0.1);
+                shape.style.transform = `translateY(${scrolled * speed}px)`;
+            });
+        });
+
+        // Dynamic notification badge
+        let notificationCount = 3;
+        setInterval(() => {
+            if (Math.random() > 0.7) {
+                notificationCount++;
+                document.querySelector('.notification-badge').textContent = notificationCount;
+            }
+        }, 30000);
+    </script>
+</body>
+</html>
