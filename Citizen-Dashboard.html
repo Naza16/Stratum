@@ -1,0 +1,1211 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Citizen Portal - STRATUM Assessment System</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary-cyan: #06b6d4;
+            --primary-purple: #7c3aed;
+            --dark-bg: #0f172a;
+            --card-bg: rgba(30, 41, 59, 0.8);
+            --text-primary: #e2e8f0;
+            --text-secondary: #94a3b8;
+            --accent-green: #10b981;
+            --accent-orange: #f59e0b;
+            --accent-red: #ef4444;
+            --gradient-primary: linear-gradient(135deg, #06b6d4, #0891b2);
+            --gradient-secondary: linear-gradient(135deg, #7c3aed, #5b21b6);
+            --gradient-bg: linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #334155 100%);
+            --gradient-success: linear-gradient(135deg, #10b981, #059669);
+            --gradient-warning: linear-gradient(135deg, #f59e0b, #d97706);
+            --gradient-danger: linear-gradient(135deg, #ef4444, #dc2626);
+            --border-color: rgba(148, 163, 184, 0.1);
+        }
+
+        body {
+            font-family: 'Inter', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: var(--gradient-bg);
+            color: var(--text-primary);
+            min-height: 100vh;
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+
+        /* Animated Background */
+        .animated-bg {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            opacity: 0.05;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 20px;
+            display: flex;
+            flex-direction: column;
+            width: 100%;
+        }
+
+        /* Header */
+        .header {
+            background: rgba(15, 23, 42, 0.95);
+            backdrop-filter: blur(20px);
+            border-bottom: 1px solid var(--border-color);
+            padding: 1rem 0;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+        }
+
+        .nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-size: 1.8rem;
+            font-weight: 800;
+            background: var(--gradient-primary);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            text-transform: uppercase;
+            letter-spacing: 3px;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 2.5rem;
+            list-style: none;
+        }
+
+        .nav-links a {
+            color: var(--text-secondary);
+            text-decoration: none;
+            transition: all 0.3s ease;
+            font-weight: 500;
+            position: relative;
+            padding: 0.5rem 0;
+        }
+
+        .nav-links a.active,
+        .nav-links a:hover {
+            color: var(--primary-cyan);
+        }
+
+        .nav-links a.active::before,
+        .nav-links a:hover::before {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 2px;
+            background: var(--primary-cyan);
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        @keyframes pulse-green {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+
+        .user-avatar {
+            width: 45px;
+            height: 45px;
+            border-radius: 50%;
+            background: var(--gradient-primary);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+            cursor: pointer;
+            transition: transform 0.3s ease;
+        }
+
+        .user-avatar:hover {
+            transform: scale(1.1);
+        }
+
+        /* Main Dashboard Layout */
+        .dashboard {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 2rem;
+            margin: 2rem 0;
+            width: 100%;
+        }
+
+        .main-content {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 20px;
+            display: flex;
+            flex-direction: column;
+            width: 100%;
+            gap: 2rem;
+        }
+
+        /* Welcome Section */
+        .welcome-section {
+            background: var(--card-bg);
+            border-radius: 20px;
+            padding: 2.5rem;
+            border: 1px solid var(--border-color);
+            backdrop-filter: blur(20px);
+            position: relative;
+            overflow: hidden;
+            width: 100%;
+        }
+
+        .welcome-section::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: var(--gradient-primary);
+        }
+
+        .welcome-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+        }
+
+        .welcome-title {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: var(--primary-cyan);
+        }
+
+        .last-updated {
+            color: var(--text-secondary);
+            font-size: 0.8rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding-top: 8px;
+        }
+
+        /* Enhanced Grid Layout */
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 2rem;
+            width: 100%;
+        }
+
+        .left-column {
+            display: flex;
+            flex-direction: column;
+            gap: 2rem;
+        }
+
+        .right-column {
+            display: flex;
+            flex-direction: column;
+            gap: 2rem;
+        }
+
+        /* IEC Score Card */
+        .iec-score-card {
+            background: var(--card-bg);
+            border-radius: 20px;
+            padding: 2.5rem;
+            border: 1px solid var(--border-color);
+            backdrop-filter: blur(20px);
+            position: relative;
+            overflow: hidden;
+            width: 100%;
+        }
+
+        .iec-score-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: var(--gradient-success);
+        }
+
+        .score-overview {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        .score-main {
+            text-align: center;
+        }
+
+        .score-number {
+            font-size: 4rem;
+            font-weight: 800;
+            background: var(--gradient-success);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 0.5rem;
+        }
+
+        .score-label {
+            color: var(--text-secondary);
+            font-size: 1.1rem;
+            margin-bottom: 1rem;
+        }
+
+        .score-trend {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            color: var(--accent-green);
+            font-weight: 600;
+            font-size: 1.1rem;
+        }
+
+        .score-details {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .score-breakdown {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0.8rem;
+            background: rgba(15, 23, 42, 0.5);
+            border-radius: 12px;
+        }
+
+        .breakdown-label {
+            color: var(--text-primary);
+            font-weight: 500;
+        }
+
+        .breakdown-value {
+            font-weight: 600;
+        }
+
+        .breakdown-value.excellent { color: var(--accent-green); }
+        .breakdown-value.good { color: var(--primary-cyan); }
+        .breakdown-value.average { color: var(--accent-orange); }
+        .breakdown-value.poor { color: var(--accent-red); }
+
+        .progress-ring {
+            position: relative;
+            width: 120px;
+            height: 120px;
+            margin: 1rem auto;
+        }
+
+        .progress-ring svg {
+            width: 100%;
+            height: 100%;
+            transform: rotate(-90deg);
+        }
+
+        .progress-ring-bg {
+            fill: none;
+            stroke: rgba(148, 163, 184, 0.2);
+            stroke-width: 8;
+        }
+
+        .progress-ring-fill {
+            fill: none;
+            stroke: url(#gradient);
+            stroke-width: 8;
+            stroke-linecap: round;
+            stroke-dasharray: 283;
+            stroke-dashoffset: 78;
+            animation: progressRing 2s ease-out;
+        }
+
+        @keyframes progressRing {
+            from { stroke-dashoffset: 283; }
+            to { stroke-dashoffset: 78; }
+        }
+
+        .progress-percentage {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 1.2rem;
+            font-weight: 700;
+            color: var(--text-primary);
+        }
+
+        /* Improvement Section */
+        .improvement-section {
+            background: var(--card-bg);
+            border-radius: 20px;
+            padding: 2.5rem;
+            border: 1px solid var(--border-color);
+            backdrop-filter: blur(20px);
+            position: relative;
+            overflow: hidden;
+            width: 100%;
+        }
+
+        .improvement-section::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: var(--gradient-warning);
+        }
+
+        .section-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .improvement-grid {
+            display: grid;
+            gap: 1.5rem;
+        }
+
+        .improvement-item {
+            background: rgba(15, 23, 42, 0.5);
+            border-radius: 16px;
+            padding: 2rem;
+            transition: transform 0.3s ease;
+        }
+
+        .improvement-item:hover {
+            transform: translateX(5px);
+        }
+
+        .improvement-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+
+        .improvement-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+
+        .priority-badge {
+            padding: 0.3rem 0.8rem;
+            border-radius: 12px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+
+        .priority-high {
+            background: rgba(239, 68, 68, 0.2);
+            color: var(--accent-red);
+            border: 1px solid rgba(239, 68, 68, 0.3);
+        }
+
+        .priority-medium {
+            background: rgba(245, 158, 11, 0.2);
+            color: var(--accent-orange);
+            border: 1px solid rgba(245, 158, 11, 0.3);
+        }
+
+        .priority-low {
+            background: rgba(16, 185, 129, 0.2);
+            color: var(--accent-green);
+            border: 1px solid rgba(16, 185, 129, 0.3);
+        }
+
+        .improvement-description {
+            color: var(--text-secondary);
+            margin-bottom: 1rem;
+            line-height: 1.5;
+        }
+
+        .improvement-actions {
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+        }
+
+        .action-btn {
+            padding: 0.6rem 1.2rem;
+            border: none;
+            border-radius: 8px;
+            font-size: 0.9rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .action-primary {
+            background: var(--gradient-primary);
+            color: white;
+        }
+
+        .action-secondary {
+            background: rgba(148, 163, 184, 0.2);
+            color: var(--text-secondary);
+            border: 1px solid rgba(148, 163, 184, 0.3);
+        }
+
+        .action-btn:hover {
+            transform: translateY(-2px);
+        }
+
+        /* Activity Section */
+        .activity-section {
+            background: var(--card-bg);
+            border-radius: 20px;
+            padding: 2rem;
+            border: 1px solid var(--border-color);
+            backdrop-filter: blur(20px);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .activity-section::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: var(--gradient-secondary);
+        }
+
+        .activity-item {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            padding: 1rem;
+            border-radius: 12px;
+            margin-bottom: 1rem;
+            background: rgba(15, 23, 42, 0.3);
+            transition: background 0.3s ease;
+        }
+
+        .activity-item:hover {
+            background: rgba(15, 23, 42, 0.5);
+        }
+
+        .activity-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1rem;
+        }
+
+        .activity-positive { background: var(--gradient-success); color: white; }
+        .activity-neutral { background: var(--gradient-primary); color: white; }
+        .activity-negative { background: var(--gradient-danger); color: white; }
+
+        .activity-content {
+            flex: 1;
+        }
+
+        .activity-title {
+            color: var(--text-primary);
+            font-weight: 500;
+            margin-bottom: 0.2rem;
+        }
+
+        .activity-time {
+            color: var(--text-secondary);
+            font-size: 0.8rem;
+        }
+
+        .activity-impact {
+            font-weight: 600;
+            font-size: 0.9rem;
+        }
+
+        .impact-positive { color: var(--accent-green); }
+        .impact-neutral { color: var(--primary-cyan); }
+        .impact-negative { color: var(--accent-red); }
+
+        /* Goals Section */
+        .goals-section {
+            background: var(--card-bg);
+            border-radius: 20px;
+            padding: 2rem;
+            border: 1px solid var(--border-color);
+            backdrop-filter: blur(20px);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .goals-section::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: var(--gradient-primary);
+        }
+
+        .goal-item {
+            background: rgba(15, 23, 42, 0.5);
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .goal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+
+        .goal-title {
+            color: var(--text-primary);
+            font-weight: 600;
+        }
+
+        .goal-progress {
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 8px;
+            background: rgba(148, 163, 184, 0.2);
+            border-radius: 4px;
+            overflow: hidden;
+            margin-bottom: 0.5rem;
+        }
+
+        .progress-fill {
+            height: 100%;
+            border-radius: 4px;
+            transition: width 2s ease;
+        }
+
+        .progress-75 { width: 75%; background: var(--gradient-success); }
+        .progress-45 { width: 45%; background: var(--gradient-warning); }
+        .progress-90 { width: 90%; background: var(--gradient-primary); }
+
+        .goal-deadline {
+            color: var(--text-secondary);
+            font-size: 0.8rem;
+        }
+
+        /* Quick Stats */
+        .quick-stats {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+
+        .stat-card {
+            background: rgba(15, 23, 42, 0.5);
+            border-radius: 12px;
+            padding: 1.5rem;
+            text-align: center;
+            transition: transform 0.3s ease;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-3px);
+        }
+
+        .stat-number {
+            font-size: 2rem;
+            font-weight: 800;
+            margin-bottom: 0.5rem;
+        }
+
+        .stat-label {
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+        }
+
+        /* Enhanced Footer */
+        .footer {
+            background: rgba(15, 23, 42, 0.95);
+            border-top: 1px solid var(--border-color);
+            padding: 4rem 0 2rem;
+            margin-top: 4rem;
+        }
+
+        .footer-content {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 3rem;
+            margin-bottom: 2rem;
+        }
+
+        .footer-section h3 {
+            color: var(--text-primary);
+            font-size: 1.2rem;
+            margin-bottom: 1rem;
+            font-weight: 600;
+        }
+
+        .footer-links {
+            display: flex;
+            flex-direction: column;
+            gap: 0.8rem;
+        }
+
+        .footer-links a {
+            color: var(--text-secondary);
+            text-decoration: none;
+            transition: color 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .footer-links a:hover {
+            color: var(--primary-cyan);
+        }
+
+        .footer-bottom {
+            border-top: 1px solid var(--border-color);
+            padding-top: 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+
+        .social-links {
+            display: flex;
+            gap: 1rem;
+        }
+
+        .social-link {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: rgba(148, 163, 184, 0.1);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--text-secondary);
+            text-decoration: none;
+            transition: all 0.3s ease;
+        }
+
+        .social-link:hover {
+            background: var(--primary-cyan);
+            color: white;
+            transform: translateY(-2px);
+        }
+
+        /* Responsive Design */
+        @media (max-width: 1200px) {
+            .dashboard-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .score-overview {
+                grid-template-columns: 1fr;
+                text-align: center;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .nav-links {
+                display: none;
+            }
+
+            .quick-stats {
+                grid-template-columns: 1fr;
+            }
+
+            .improvement-actions {
+                flex-direction: column;
+            }
+
+            .container {
+                padding: 0 15px;
+            }
+
+            .welcome-header {
+                flex-direction: column;
+                text-align: center;
+                gap: 1rem;
+            }
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+    <div class="animated-bg">
+        <div class="floating-shapes">
+            <div class="shape"></div>
+            <div class="shape"></div>
+            <div class="shape"></div>
+        </div>
+    </div>
+
+    <header class="header">
+        <div class="container">
+            <nav class="nav">
+                <div class="logo">STRATUM</div>
+                <ul class="nav-links">
+                    <li><a href="#dashboard" class="active">Dashboard</a></li>
+                    <li><a href="Citizen-History.html">History</a></li>
+                    <li><a href="Citizen-Goals.html">Goals</a></li>
+                    <li><a href="Citizen-Appeals.html">Appeals</a></li>
+                </ul>
+                <div class="user-info">
+                    <div class="user-avatar">NS</div>
+                </div>
+            </nav>
+        </div>
+    </header>
+
+    <main class="container">
+        <div class="dashboard">
+            <div class="main-content">
+                <!-- Welcome Section -->
+                <section class="welcome-section">
+                    <div class="welcome-header">
+                        <div>
+                            <h1 class="welcome-title">Welcome back, Nazaret Seranusoglu</h1>
+                            <p style="color: var(--text-secondary); margin-top: 0.5rem;">
+                                Your social behavior assessment dashboard.
+                            </p>
+                            <div class="last-updated">
+                                <i class="fas fa-clock"></i>
+                                <span>Last updated: 2 hours ago</span>                            
+                            </div>
+                        </div>
+                        <div class="quick-stats">
+                            <div class="stat-card">
+                                <div class="stat-number" style="color: var(--accent-green);">98%</div>
+                                <div class="stat-label">Compliance Rate</div>
+                            </div>
+                            <div class="stat-card">
+                                <div class="stat-number" style="color: var(--primary-cyan);">15</div>
+                                <div class="stat-label">Days Streak</div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Dashboard Grid -->
+                <div class="dashboard-grid">
+                    <div class="left-column">
+                        <!-- IEC Score Card -->
+                        <section class="iec-score-card">
+                            <h2 class="section-title">
+                                <i class="fas fa-chart-line"></i>
+                                Individual Evaluation Composite (IEC) Score
+                            </h2>
+                            
+                            <div class="score-overview">
+                                <div class="score-main">
+                                    <div class="score-number" data-target="723">0</div>
+                                    <div class="score-label">Current IEC Score</div>
+                                    <div class="score-trend">
+                                        <i class="fas fa-arrow-up"></i>
+                                        <span>+5.2% this month</span>
+                                    </div>
+                                    
+                                    <div class="progress-ring">
+                                        <svg>
+                                            <defs>
+                                                <linearGradient id="gradient" x1="0%" y1="0%" x2="100%" y2="0%">
+                                                    <stop offset="0%" style="stop-color:#10b981"/>
+                                                    <stop offset="100%" style="stop-color:#06b6d4"/>
+                                                </linearGradient>
+                                            </defs>
+                                            <circle class="progress-ring-bg" cx="60" cy="60" r="45"/>
+                                            <circle class="progress-ring-fill" cx="60" cy="60" r="45"/>
+                                        </svg>
+                                        <div class="progress-percentage">72%</div>
+                                    </div>
+                                </div>
+                                
+                                <div class="score-details">
+                                    <div class="score-breakdown">
+                                        <span class="breakdown-label">Community Engagement</span>
+                                        <span class="breakdown-value excellent">Excellent</span>
+                                    </div>
+                                    <div class="score-breakdown">
+                                        <span class="breakdown-label">Social Compliance</span>
+                                        <span class="breakdown-value good">Good</span>
+                                    </div>
+                                    <div class="score-breakdown">
+                                        <span class="breakdown-label">Civic Participation</span>
+                                        <span class="breakdown-value good">Good</span>
+                                    </div>
+                                    <div class="score-breakdown">
+                                        <span class="breakdown-label">Digital Behavior</span>
+                                        <span class="breakdown-value average">Average</span>
+                                    </div>
+                                    <div class="score-breakdown">
+                                        <span class="breakdown-label">Economic Stability</span>
+                                        <span class="breakdown-value excellent">Excellent</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </section>
+
+                        <!-- Improvement Areas -->
+                        <section class="improvement-section">
+                            <h2 class="section-title">
+                                <i class="fas fa-target"></i>
+                                Areas for Improvement
+                            </h2>
+                            
+                            <div class="improvement-grid">
+                                <div class="improvement-item">
+                                    <div class="improvement-header">
+                                        <h3 class="improvement-title">Digital Behavior Enhancement</h3>
+                                        <span class="priority-badge priority-high">High Priority</span>
+                                    </div>
+                                    <p class="improvement-description">
+                                        Your digital behavior score indicates room for improvement in online social interactions 
+                                        and digital citizenship practices. Focus on positive engagement and constructive communication.
+                                    </p>
+                                    <div class="improvement-actions">
+                                        <a href="#" class="action-btn action-primary">
+                                            <i class="fas fa-play"></i>
+                                            Start Course
+                                        </a>
+                                        <a href="#" class="action-btn action-secondary">
+                                            <i class="fas fa-info-circle"></i>
+                                            Learn More
+                                        </a>
+                                    </div>
+                                </div>
+
+                                <div class="improvement-item">
+                                    <div class="improvement-header">
+                                        <h3 class="improvement-title">Community Volunteer Activities</h3>
+                                        <span class="priority-badge priority-medium">Medium Priority</span>
+                                    </div>
+                                    <p class="improvement-description">
+                                        Increase your community involvement through volunteer work and local initiatives. 
+                                        This will positively impact your civic participation score.
+                                    </p>
+                                    <div class="improvement-actions">
+                                        <a href="#" class="action-btn action-primary">
+                                            <i class="fas fa-hands-helping"></i>
+                                            Find Opportunities
+                                        </a>
+                                        <a href="#" class="action-btn action-secondary">
+                                            <i class="fas fa-calendar"></i>
+                                            Schedule
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                        </section>
+                    </div>
+
+                    <div class="right-column">
+                        <!-- Current Goals -->
+                        <section class="goals-section">
+                            <h2 class="section-title">
+                                <i class="fas fa-bullseye"></i>
+                                Current Goals
+                            </h2>
+                            
+                            <div class="goal-item">
+                                <div class="goal-header">
+                                    <div class="goal-title">Complete Digital Citizenship Course</div>
+                                    <div class="goal-progress">75%</div>
+                                </div>
+                                <div class="progress-bar">
+                                    <div class="progress-fill progress-75"></div>
+                                </div>
+                                <div class="goal-deadline">Due: March 15, 2024</div>
+                            </div>
+
+                            <div class="goal-item">
+                                <div class="goal-header">
+                                    <div class="goal-title">Volunteer 20 Hours</div>
+                                    <div class="goal-progress">45%</div>
+                                </div>
+                                <div class="progress-bar">
+                                    <div class="progress-fill progress-45"></div>
+                                </div>
+                                <div class="goal-deadline">Due: April 30, 2024</div>
+                            </div>
+
+                            <div class="goal-item">
+                                <div class="goal-header">
+                                    <div class="goal-title">Maintain Score Above 700</div>
+                                    <div class="goal-progress">90%</div>
+                                </div>
+                                <div class="progress-bar">
+                                    <div class="progress-fill progress-90"></div>
+                                </div>
+                                <div class="goal-deadline">Ongoing</div>
+                            </div>
+                            <div class="goal-item">
+                                <div class="goal-header">
+                                    <div class="goal-title">Help community centers</div>
+                                    <div class="goal-progress">75%</div>
+                                </div>
+                                <div class="progress-bar">
+                                    <div class="progress-fill progress-75"></div>
+                                </div>
+                                <div class="goal-deadline">Due: March 15, 2024</div>
+                            </div>
+                            <div class="goal-item">
+                                <div class="goal-header">
+                                    <div class="goal-title">Avoid noise complaints</div>
+                                    <div class="goal-progress">90%</div>
+                                </div>
+                                <div class="progress-bar">
+                                    <div class="progress-fill progress-90"></div>
+                                </div>
+                                <div class="goal-deadline">Due: July 31, 2025</div>
+                            </div>
+                            <div class="goal-item">
+                                <div class="goal-header">
+                                    <div class="goal-title">Pay taxes on time</div>
+                                    <div class="goal-progress">45%</div>
+                                </div>
+                                <div class="progress-bar">
+                                    <div class="progress-fill progress-45"></div>
+                                </div>
+                                <div class="goal-deadline">Due: December 31, 2025</div>
+                            </div>
+                            <div class="goal-item">
+                                <div class="goal-header">
+                                    <div class="goal-title"> Attend citizen rights workshops</div>
+                                    <div class="goal-progress">35%</div>
+                                </div>
+                                <div class="progress-bar">
+                                    <div class="progress-fill progress-45"></div>
+                                </div>
+                                <div class="goal-deadline">Due: October 10, 2025</div>
+                            </div>
+                        </section>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h3>Support & Resources</h3>
+                    <div class="footer-links">
+                        <a href="#documentation"><i class="fas fa-book"></i> Documentation</a>
+                        <a href="#faq"><i class="fas fa-question-circle"></i> FAQ</a>
+                        <a href="#contact"><i class="fas fa-envelope"></i> Contact Support</a>
+                    </div>
+                </div>
+
+                <div class="footer-section">
+                    <h3>Legal & Compliance</h3>
+                    <div class="footer-links">
+                        <a href="#privacy"><i class="fas fa-shield-alt"></i> Privacy Policy</a>
+                        <a href="#terms"><i class="fas fa-file-contract"></i> Terms of Service</a>
+                        <a href="#ethics"><i class="fas fa-balance-scale"></i> Ethical Guidelines</a>
+                        <a href="#appeals"><i class="fas fa-gavel"></i> Appeal Process</a>
+                    </div>
+                </div>
+
+                <div class="footer-section">
+                    <h3>Transparency</h3>
+                    <div class="footer-links">
+                        <a href="#bias-report"><i class="fas fa-chart-bar"></i> Bias Reporting</a>
+                        <a href="#audit-logs"><i class="fas fa-clipboard-list"></i> Audit Logs</a>
+                        <a href="#committee"><i class="fas fa-users"></i> Oversight Committee</a>
+                        <a href="#public-data"><i class="fas fa-database"></i> Public Data</a>
+                    </div>
+                </div>
+            </div>
+
+            <div class="footer-bottom">
+                <div class="copyright">
+                    © 2025 STRATUM - Integrated Social Behavior Assessment System. All rights reserved.
+                </div>
+                <div class="social-links">
+                    <a href="#" class="social-link"><i class="fab fa-twitter"></i></a>
+                    <a href="#" class="social-link"><i class="fab fa-linkedin"></i></a>
+                    <a href="#" class="social-link"><i class="fab fa-github"></i></a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        function animateCounter(element, target, duration = 2000) {
+            let start = 0;
+            const increment = target / (duration / 16);
+            const timer = setInterval(() => {
+                start += increment;
+                if (start >= target) {
+                    element.textContent = target;
+                    clearInterval(timer);
+                } else {
+                    element.textContent = Math.floor(start);
+                }
+            }, 16);
+        }
+
+        // Intersection Observer for animations
+        const observerOptions = {
+            threshold: 0.1,
+            rootMargin: '0px 0px -50px 0px'
+        };
+
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.style.opacity = '1';
+                    entry.target.style.transform = 'translateY(0)';
+                    
+                    // Animate IEC score counter
+                    if (entry.target.classList.contains('iec-score-card')) {
+                        const scoreElement = entry.target.querySelector('.score-number');
+                        const target = parseInt(scoreElement.dataset.target);
+                        animateCounter(scoreElement, target);
+                    }
+                }
+            });
+        }, observerOptions);
+
+        // Observe elements for animation
+        document.querySelectorAll('.iec-score-card, .improvement-item, .activity-item, .goal-item').forEach(el => {
+            el.style.opacity = '0';
+            el.style.transform = 'translateY(20px)';
+            el.style.transition = 'opacity 0.6s ease, transform 0.6s ease';
+            observer.observe(el);
+        });
+
+        // Progress bar animations
+        setTimeout(() => {
+            document.querySelectorAll('.progress-fill').forEach(bar => {
+                bar.style.transition = 'width 2s ease';
+            });
+        }, 1000);
+
+        // Interactive elements
+        document.querySelectorAll('.action-btn').forEach(btn => {
+            btn.addEventListener('click', function(e) {
+                e.preventDefault();
+                this.style.transform = 'scale(0.95)';
+                setTimeout(() => {
+                    this.style.transform = '';
+                    showNotification('Action initiated', 'Your request has been processed successfully.');
+                }, 150);
+            });
+        });
+
+        // Notification system
+        function showNotification(title, message) {
+            const notification = document.createElement('div');
+            notification.style.cssText = `
+                position: fixed;
+                top: 20px;
+                right: 20px;
+                background: var(--card-bg);
+                border: 1px solid var(--border-color);
+                border-radius: 12px;
+                padding: 1rem 1.5rem;
+                backdrop-filter: blur(20px);
+                z-index: 10000;
+                opacity: 0;
+                transform: translateX(100%);
+                transition: all 0.3s ease;
+                max-width: 300px;
+            `;
+            
+            notification.innerHTML = `
+                <div style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.5rem;">
+                    <i class="fas fa-check-circle" style="color: var(--accent-green);"></i>
+                    <strong style="color: var(--text-primary);">${title}</strong>
+                </div>
+                <div style="color: var(--text-secondary); font-size: 0.9rem;">${message}</div>
+            `;
+            
+            document.body.appendChild(notification);
+            
+            setTimeout(() => {
+                notification.style.opacity = '1';
+                notification.style.transform = 'translateX(0)';
+            }, 100);
+            
+            setTimeout(() => {
+                notification.style.opacity = '0';
+                notification.style.transform = 'translateX(100%)';
+                setTimeout(() => notification.remove(), 300);
+            }, 3000);
+        }
+
+        // Parallax effect for floating shapes
+        window.addEventListener('scroll', () => {
+            const scrolled = window.pageYOffset;
+            const shapes = document.querySelectorAll('.shape');
+            shapes.forEach((shape, index) => {
+                const speed = 0.3 + (index * 0.1);
+                shape.style.transform = `translateY(${scrolled * speed}px)`;
+            });
+        });
+
+        // Real-time updates simulation
+        setInterval(() => {
+            const statusIndicator = document.querySelector('.status-indicator');
+            statusIndicator.style.animation = 'none';
+            setTimeout(() => {
+                statusIndicator.style.animation = 'pulse-green 2s infinite';
+            }, 100);
+        }, 10000);
+    </script>
+</body>
+</html>
